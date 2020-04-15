@@ -1,7 +1,7 @@
 import logging
 import base64
 import urllib
-import cgi
+import html
 from ulauncher.api.client.Extension import Extension
 from ulauncher.api.client.EventListener import EventListener
 from ulauncher.api.shared.event import KeywordQueryEvent, ItemEnterEvent
@@ -25,10 +25,13 @@ class KeywordQueryEventListener(EventListener):
     def on_event(self, event, extension):
         items = []
 
-        base64Text = base64.b64encode(event.get_argument())
-        urlEncoded = urllib.quote_plus(event.get_argument())
+        if event.get_argument() is None:
+        	return
 
-        htmlEncoded = cgi.escape(event.get_argument())
+        base64Text = base64.encodebytes(event.get_argument().encode()).decode("utf-8") 
+        urlEncoded = urllib.parse.quote_plus(event.get_argument())
+
+        htmlEncoded = html.escape(event.get_argument())
         items.append(ExtensionResultItem(icon='images/icon.png',
                                          name=base64Text,
                                          description='Base64 Encoded',
